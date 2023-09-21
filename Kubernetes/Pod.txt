@@ -1,0 +1,16 @@
+apiVersion: v1
+
+kind: Pod
+
+metadata:
+  name: arun-pod
+  labels:
+    app: myapp   
+spec:
+  containers:
+    - name: arun
+      image: arunvel1988/c1
+
+
+
+kubectl create -f 1.yaml

@@ -1,0 +1,32 @@
+Downloading and installing Tomcat Server::
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Install Java :
+~~~~~~~~
+yum install java-1.8* (or sudo yum install java-1.8*)
+
+Install Tomcat:
+~~~~~~~~~~
+sudo su -
+cd /
+cd /opt
+#Download tomcat binary
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.68/bin/apache-tomcat-9.0.68.tar.gz
+#unzip tomcat binary
+tar -zvxf apache-tomcat-9.0.68.tar.gz
+
+Add permissions to start and stop Tomcat :
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cd apache-tomcat-9.0.68
+cd bin
+chmod +x startup.sh
+chmod +x shutdown.sh
+
+Change Tomcat port number from 8080 to 80
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cd ..
+cd conf
+nano server.xml (Here look for 8080 and change it to 80) then Ctrl+X
+cd ..
+cd bin
+./startup.sh

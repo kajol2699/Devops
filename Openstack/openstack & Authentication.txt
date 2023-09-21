@@ -1,0 +1,81 @@
+22/11/22
+~~~~~~~~~
+
+Open Stack:
+~~~~~~~~~~
+Is a cloud os that is use to control of spools(region) of computing storage and networking resources with in a data center
+it is a open sorce and software.
+The major componets of open stack are give below:
+						*Coumpute (nova)
+						*Object storage (swift)
+						*Lock storage(Sender)
+						*Neutron(networking)
+						*Dashbord(horizon)
+						*Keystone(identity service)
+
+						*Imange service(glance)
+
+
+STEP: *yum install -y https://www.rdoproject.org/repos/rdo-release.rpm
+      *See- ls -ll /etc/yum.repos.d/
+       *install openstack installer "Packstack"
+	*yum install -y openstack-packstack
+NOTE:(Ansible papet:configration files,playbook(yaml file),sepa)[inside packstack]
+	*To deploy openstack--packstack --gen-answer-file=/root/myfile.txt
+	*see-- ls -ll /root/
+	*open myfile.txt And edit the password details.[in that file they also give as IP
+	of vm]
+	*LINE 94 CONFIG VM IP
+	*LINE 306 Chack/change passward.
+	*in case any problem-- [setenforce 0] then [systemctl disable firewalld.service]
+	*To deploy-[packstack --answer-file=/root/myfile.txt]
+
+	*To open a server open a link given in terminal. 
+
+
+Authentication:
+~~~~~~~~~~~~~~
+
+
+Code: 
+====
+
+
+<?xml version ="1.0"?>
+<web-app>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>My JSP</web-resource-name>
+			<url-pattern>/test.jsp</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<login-config>
+		<auth-method>BASIC</auth-method>
+	</login-config>
+
+	<security-role>
+		<role-name>admin</role-name>
+	</security-role>
+	
+</web-app>
+
+
+-----------------------------------------------------------------------------------------
+
+Q1:Create a new application named demo in tomcat.
+It should have two JSPs:
+A:allowed.jsp-should be accessible without login
+	This should display "hello from allowed.jsp"
+B:notallowed.jsp-should oonly be accessible to a role called manager
+	This should display "hello from notallowed.jsp"
+
+The manager role should be given to a user named newuser,whose password should be newuser.
+
+----------------------------------------------------------------------------------------- 

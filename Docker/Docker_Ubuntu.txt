@@ -1,0 +1,10 @@
+DOCKER USING UBUNTU
+
+sudo apt install docker.io -y
+sudo systemctl start docker
+ubdocker pull mysql
+sudo docker pull mysql
+sudo docker db1 logs
+sudo docker ps
+sudo docker run --name cl1 -ti  mysql mysql -uroot -p -h 172.17.0.2
+

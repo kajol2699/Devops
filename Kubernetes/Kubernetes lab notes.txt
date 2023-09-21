@@ -1,0 +1,381 @@
+# kubernets
+
+# Master node
+        |_______> Container_node1
+        |_______> Container_node2
+        |_______> Container_node3
+
+container_nodes are known as worker nodes.
+it keeps the replicas of the worker nodes.
+
+
+# kubernetes clusters
+-> it is a collection of container working as woker nodes, which are also replicates from time to time by master node, but here, master node becomes a single
+point failure, in order to prevent this we use multi master system
+
+-> in order to work on cloud, kubernetes has to be used with clouse controller
+
+# Kubernetes Components
+1. kube-apiserver
+2. etcd : it is database,it store all the datam,it's configuration data, it's state and it's metadata
+3. kube-scheduler
+    pod: when group are made on the basis of application, and these are assigned with the ip, this group is known as pod
+4. kube-controller-manager: components that runs on master
+    1. node controller
+    2. replication controller
+    3. Endpoints controller
+    4. Service Account & Token controller
+    5. Cloud Controller Manager
+        1. node controller
+        2. router controller
+        3. service controller
+        4. Volume Controller
+5. kubelet : acts as a worker node or client node, it does not manage containers which are not created by kubernetes 
+6. kube-proxy : by default, ip's of the container are not fixed, to prevent this problem we use kube-proxy, it updates and manages the ip address of the
+container present inside pod
+
+                                                _____________________________________
+                                                |  default ip: 172.17.0.2           |
+                                                |  default adapter: docker0         |
+                                                |  default network : 172.17.0.1     |
+                                                |  worker node 1                    |
+                                                |___________________________________|
+                                                _____________________________________
+                                                |  default ip: 172.17.0.2           |
+                                                |  default adapter: docker0         |
+                                                |  default network : 172.17.0.1     |
+                                                |  worker node 2                    |
+                                                |___________________________________|
+                                                _____________________________________
+                                                |  default ip: 172.17.0.2           |
+                                                |  default adapter: docker0         |
+                                                |  default network : 172.17.0.1     |
+                                                |  worker node 3                    |
+                                                |___________________________________|
+
+# we need to install flannel network plugin, which will be used to define the cidr network for the pod networks
+# pod ip address are machine specific
+# pod1 default ip address: 10.244.1.1
+# pod2 default ip address: 10.244.2.1
+# pod3 default ip address: 10.244.3.1
+
+how to get nodes in the cluster
+-> kubectl get nodes
+
+how to get cluster-info
+-> kubectl cluster-info
+
+how to start a cluster
+-> sudo kubeadm init --apiserver-advertise-address 192.168.18.1 --pod-network-cidr=10.244.0.0/16
+# this command will return a token in the end,we need to store the token, which will be executes on the client machines
+
+creating a directory
+-> mkdir .kube
+
+copy admin config to .kube directory
+-> sudo cp /etc/kubernetes/admin.conf ./kube/config
+
+get ownership of the .kube folder
+-> sudo chown {user}:{group} ./kube/config 
+-> sudo chown uadmin:uadmin ./kube/config 
+
+get running nodes
+-> kubectl get nodes (by default it shows the container running on local machine)
+
+get running pods
+-> kubectl get pods
+-> kubectl get pods --all-namespaces(this will return all the namespaces running on local machine,which are running as virtual environment)
+
+to run token on the client nodes
+# first copy the token to the client nodes
+-> scp kube-join worker1:/home/uadmin
+-> scp kube-join worker2:/home/uadmin
+
+
+# on worker1
+-> sudo ./kube-join
+# on worker2
+-> sudo ./kube-join
+
+to see the running nodes
+-> kubectl get nodes
+# master node role will be, control-plane
+# worker1 node role will be, ready
+# worker2 node role will be, ready
+
+
+# kubernetes part 
+
+create kubernetes deployment
+-> kubectl create deployment web-app1 --image=[image_name_from_cloud] --port=80 --replicas=2
+
+-> kubectl get pods
+-> kubectl get pods -o wide
+
+create a service
+-> kubectl expose deployment web-app1 --type=NodePort
+
+check the services running
+-> kubectl get services
+
+now if we update our app, we need to repeat the steps
+1. create docker img of the updated file
+2. push the updated img file to docker hub
+3. update the image in kubernetes
+
+to automate this process we use jenkins
+
+update the image in kubernetes we use
+-> kubectl set image deployment/web-app1 web-app1=[image_name_from_cloud]
+
+how to roll back a deployment
+-> kubectl rollout undo deployment/app --to-revision=2
+
+create new namespace (ns=namespace)
+-> kubectl create ns hpcsa
+
+assigning this name space to deployment
+-> kubectl create deployment hpcsa-app --image=httpd --port=80 --namespace=hpcsa --replicas=2
+
+how to check if deployment is create with our namespace
+-> kubectl get deployment --namespace=hpcsa
+or
+-> kubectl get pods --all-namespace
+
+# note : without --namespace argument, we get output of default namespace
+
+# now to create a service for the given deployment we have to give namespace parameter
+-> kubectl expose deployment hpcsa-app --type=NodePort --namespace=hpcsa
+
+# note: deleting the deployment wont delete the service automatically, we have to create it manually
+
+-> kubectl delete svc web-app1
+-> kubectl delete deployment hpcsa-app
+
+# how to create yaml file
+-> create mkdir /App1
+-> cd App1
+
+# create yaml file
+-> sudo vi web-app1.yaml
+
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+    name: web-app1-dep
+    spec:
+    selector:
+        matchLabels:
+        app: web-app1
+    replicas: 2 # tells deployment to run 2 pods matching the template
+    template:
+        metadata:
+        labels:
+            app: web-app1
+        spec:
+        containers:
+        - name: web-app1
+            image: [image_name]
+            ports:
+            - containerPort: 80
+
+Create a deployment using yaml file
+-> kubectl apply -f web-app1.yaml
+
+check deployments
+-> kubectl get deployment
+
+check replicas
+-> kubectl get rs
+-> kubectl get pods
+-> kubectl describe deployment web-app1
+
+# create service with cluster IP yaml file
+-> sudo vi web-app1-svc.yaml
+
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: web-app1-dep
+    spec:
+      selector:
+        app: web-App1
+
+      ports:
+        - name: http
+          protocol: TCP
+          port: 80
+          targetPort: 80
+
+# create service with NodePort IP yaml file
+-> sudo vi web-app1-svc.yaml
+
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: web-app1-dep
+    spec:
+      type: NodePort
+      selector:
+        app: web-App1
+
+      ports:
+        - nodePort: 31000 
+          port: 80
+          targetPort: 80
+
+# create service with NodePort IP yaml file
+-> sudo vi web-app1-svc.yaml
+
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: web-app1-dep
+    spec:
+      type: LoadBalancer
+      selector:
+        app: web-App1
+
+      ports:
+        - nodePort: 31000 
+          port: 80
+          targetPort: 80
+
+# how to create a deployment in dry run
+-> kubectl create deployment web-app2 --image=[image_name_from_cloud] --port=80 --replicas=2 --dry-run=client -o yaml > [file_name].yaml
+
+# kubectl cordon : is used to stop pod, and no more work will be scheduled upon them
+-> kubectl cordon worker2
+
+# making more deployment to see of work gets divided to worker2 or not
+-> kubectl create deployment h1 --image=[image_name_from_cloud] --port=80 -replicas=4 
+
+# after this pod with no workload can be removed safely
+-> kubectl delete pod #pod-id
+
+# how to remove temporary scheduleding or uncordon it, so that workload can be distributed to it
+-> kubectl get pods -o wide
+
+
+# commands to run after installing kubeadm
+
+# this command will advertise the ip address of the master node
+-> sudo kubeadm init --apiserver-advertise-address 192.168.10.1 --pod-network-cidr=10.244.0.0/16
+    # parameters
+    --apiserver-advertise-address : master ip address which is needed to be advertised
+    --pod-network-cidr : this parameter will give ip address to the pods, when they will be runned
+
+-> for cluster create vm in respective modes
+    -> first network adapter: NAT mode
+    -> second network adapter: Host mode
+
+# whenever cluster is created we need to create new directory in user's home directory, and we need to create new directory
+and create a new token everytime, whenever kubernetes server is need to be restarted
+
+# create the directory
+-> mkdir .kube
+
+# copy the token file to required directory
+-> sudo cp /etc/kubernetes/admin.conf ./kube/config
+
+# change the ownership of the token file
+-> sudo chown uadmin:uadmin ./kube/config
+
+# run this command to get th info on running nodes
+-> kubectl get nodes
+
+# get info about pods of the master
+-> kubectl get pods --all-namespaces
+-> kubectl apply -f https://url
+-> kubectl get pods --all-namespaces
+
+# to reset the cluster
+-> sudo kubeadm reset
+
+# remove the directory
+-> rm -rf .kube
+-> sudo kubeadm init --apiserver-advertise-address 192.168.10.1 --pod-network-cidr 10.244.0.0/16
+# copy the new toke to the file
+-> sudo vim kube-cluster-join
+-> mkdir .kube
+-> sudo cp /etc/kubernetes/admin.conf .kube/config
+-> sudo chown uadmin:uadmin .kube/config
+-> kubectl get pods --all-namespaces
+-> cat kube-cluster-join
+
+# to run this file over ssh on the worker node 
+-> scp kube-cluster-join 192.168.10.5:/home/uadmin
+    enter password for the worker1 node:
+    worker1 : run this file as sudo user in worker 1 node
+-> scp kube-cluster-join 192.168.10.6:/home/uadmin
+    enter password for the worker2 node:
+    worker2 : run this file as sudo user in worker 2 node
+
+# to check all the running nodes on the system we use
+-> kubectl get nodes
+
+# to get all the running pod namespaces(it is a logical grouping)
+-> kubectl get pods --all-namespaces
+-> kubectl get deployment
+
+# to get running services
+-> kubectl get svc/service
+-> kubectl create deployment
+-> kubectl create deployment web1 --image=httpd --port=80
+
+# to check deployment
+-> kubectl get deployment
+
+# to get pods running (-o wide will show additional columns)
+-> kubectl get pods -o wide
+
+# how to get information about a deployment
+-> kubectl describe deployment_name
+
+# how to describe pod or deployment
+-> 
+# how to scale up a deployment
+-> kubectl scale deployment web1 --replicas=4
+
+# to check how many replicas are created(gives information about all pods)
+-> kubectl get pods -o wide
+
+# to get information about 1 specific pod 
+-> kubectl describe pod
+
+# sometimes it may take longer time, because, container starts downloading the image, which is a time taking process
+# how to scale down the deployment, scaling down will delete the containers
+-> kubectl scale deployment web1 --replicas=1
+
+# how to create a cluster ip service
+-> kubectl expose deployment web1
+
+# ip given by this service, can only be accessed by the machine present inside that machine
+
+# how to delete a service
+-> kubectl delete svc web1
+
+# how to create node port service
+-> kubectl expose deployment web1 --type=NodePort
+
+# how to create LoadBalancer service
+# in order to work this, we need a loadbalancer to work
+-> kubectl expose deployment web1 --type=LoadBalancer
+
+cluster IP -> node IP -> LoadBalancer IP 
+-> kubectl delete pod web1-id
+
+# how to get replica set
+-> kubectl get rs
+
+# kubernetes cluster, rollup feature
+ipaddress -> service -> deployment -> replicaset -> pod1
+                                                 |_ pod2
+                                                 |_ pod3
+
+in rollup feature, a replica of deployment is created then, all the connection are shifted to new replica set of the deployment
+replica and main deployment branch is deleted. then deployment service is updated with new image. and container are created form that
+new image
+
+this also allows to roll back the changes, just in case if there is any error with new image file, and container are not bein created
+

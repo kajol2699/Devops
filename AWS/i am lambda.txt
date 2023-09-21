@@ -1,0 +1,72 @@
+Go to lambda
+Create function
+Name:my demo
+Run time:python 3.9
+Create function
+Go to services
+I AM
+Roles
+Create role
+Select AWS services
+Select lambda
+Next
+Add permission:click on “AwsLambdabasicexecution Role”
+Next
+Role name :s3_trigger
+Click on create role
+Go to service 
+S3
+Create bucket
+Name:HPCSALAB01
+Select Region:by default
+Untick : block all
+Tick on acknowledge
+create bucket
+Go to lambda Function
+Create function
+Name:demo01
+Select runtime:python3.9
+Change default execution :tick use an existing role
+Select s3_trigger
+Create function
+Click +ADD trigger
+Select source:s3
+Select bucket :name :hpcsalab
+Event type:by default
+Click I acknowledge
+Add
+Go to s3
+Click on you bucket
+Click Upload 
+add file
+upload
+lambda
+monitor
+logs
+view logs in cloud watch
+and see the logs
+go to services
+simple notification service
+create topic
+select on standard
+create topic
+ subscription
+click create subscription
+protocol:email
+end point :devyanimayur1895@gmail.com
+create subscription
+lambda
+function
+add destination
+souce :asynchronous
+condition:on success
+destination :select our topic
+save
+s3
+upload
+add file
+upload
+lambda
+logs
+view logs
+

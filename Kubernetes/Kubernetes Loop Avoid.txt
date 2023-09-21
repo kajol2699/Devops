@@ -1,0 +1,132 @@
+1)
+kubectl edit cm coredns -n kube-system
+
+
+loop   (comment out)
+
+
+dashboard 
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta4/aio/deploy/recommended.yaml
+
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
+
+
+
+
+Secret code 
+
+
+1) kubectl get secrets
+
+
+2) kubectl describe secret secret_name
+
+
+
+2)go to 
+
+nano /etc/resolv.conf
+
+
+
+dns 8.8.8.8
+
+reboot the machine
+
+3) create cluster 
+
+
+use flannel network plugin
+
+
+4)
+
+then join worker nodes via token 
+
+
+5) kubectl get nodes
+
+
+all nodes should be in ready state
+
+
+6)
+
+kubectl run hello-world --replicas=5 --labels="run=load-balancer-example" --image=gcr.io/google-samples/node-hello:1.0  --port=8080
+
+
+
+kubectl get deployments hello-world
+
+
+kubectl describe deployments hello-world
+
+
+kubectl expose deployment hello-world --type=LoadBalancer --name=my-service
+
+
+
+kubectl describe services my-service
+
+
+
+
+curl 10.244.2.3:8080
+
+
+
+Kubernetes Metric Server
+
+
+
+
+1) git clone https://github.com/kubernetes-incubator/metrics-server.git
+cd metrics-server
+
+
+
+cd deploy
+
+
+nano metrics-server-deployment.yaml
+
+
+containers:
+  - name: metrics-server
+    image: k8s.gcr.io/metrics-server-amd64:v0.3.1
+    imagePullPolicy: Always
+    #add text starting here...
+    command:
+    - /metrics-server
+    - --metric-resolution=30s
+    - --kubelet-insecure-tls
+    - --kubelet-preferred-address-types=InternalIP
+    #... ending here
+    volumeMounts:
+    - name: tmp-dir
+      mountPath: /tmp
+
+
+
+ kubectl apply -f deploy/1.8+/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

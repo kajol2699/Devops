@@ -1,0 +1,44 @@
+Open Shift Source to Image
+
+1) Builder Image + Application Source Code  ---->   Executable Image(Build Artifact)
+
+
+2) Build Process Steps
+
+i) Download S2I scripts
+
+ii) Download application Source
+
+iii) S2I then streams the scripts and application sources into builder image container
+
+iv) Run Assemble script
+
+v) Save final image
+
+3) 
+
+assemble = responsible for the build of an application
+
+run = responsible for running the application
+
+
+4)
+
+Steps of S2I
+
+- Creates a container based on build image
+- pass it a tar file (appltn source & build artifacts (incremental build))
+- start the container and run its assemble script
+- wait for container to finish
+- commit container
+- setting the cmd for the output image to be the run script and tagging the image with the name provided.
+
+
+5)
+
+
+
+
+
+ 
+  

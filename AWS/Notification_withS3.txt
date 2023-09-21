@@ -1,0 +1,98 @@
+=============================================================================================
+S3--->    Role
+|          |     
+lamda     Policy
+
+
+** IAM role is an identity that you can create in your account that has specific permission
+
+** One AWS service can call another aws services oon behalf of you 
+
+** Use of IAM role--> Intraction between two services
+
+==============================================================================================
+
+
+-----------------------------------------------------------------------
+         Create IMA Role 
+-----------------------------------------------------------------------
+
+ Click on--. AWS service
+ Click on--> Lamda
+ Click on--> Next
+ Search in Permission policies--> Search Exe
+ Select--> AWSlambdaBasicExecutionRole
+ Click on--> Next
+ Role details--> Role Namse (S3 trigger)
+ Click on--> Create role
+
+-----------------------------------------------------------------------
+        Create a Bucket in S3
+-----------------------------------------------------------------------
+     --> Create Bucket
+     
+     ** Afrter Lambda Service Create Function**
+     ------------------------------------------
+
+       S3 Bucket--> Upload File1
+       S3 Bucket--> Upload File2
+       S3 Bucket--> Upload File3
+       S3 Bucket--> Upload File4
+
+------------------------------------------------------------------------
+       Lambda Service Create Function [for log creation]
+------------------------------------------------------------------------
+    
+    Click on-->  Create Function
+    Click on-->  Author from Scratch
+    Enter--> Function Nmae
+    Select--> Language ()
+    Select--> 86_64
+    Click on--> change exicution
+    Select--> s3trigger
+    Click on-->  Create Function
+    ----------------------------
+    Click on--> Add Trigger
+    ----------------------------
+    Select--> S3
+    Select--> Bucket (choose bucket)
+    Event type--> All object create events
+    Click on--> I acknowledge
+    Click on--> Add
+
+
+    *** After Simple Notification Service ***
+    -------------------------------
+    Click on--> Add Destination
+    -------------------------------
+    Add destination--> 
+    Select--> Asynchronous invocation
+    Select--> On Success
+    Select--> Choose Destination
+    Click on--> ADD
+
+-----------------------------------------------------------
+   View Log History
+-----------------------------------------------------------
+ Search CloudWach in Search Box
+ Click on--> CloudWatch
+ Click on--> Logs
+ Click on--> Logs Group
+
+----------------------------------------------------------
+ Simple Notification Service
+----------------------------------------------------------
+ Click on--> Topic
+ Enter--> Topic Nmae
+ Click on--> Standard
+ Click on--> Seletc name
+ Click on--> Logs Grou
+ Click on--> Create Topic
+ Go to--> Create Subscription
+ Select ARN--> 
+ Select Protocol--> Email
+ Enter--> email
+ Click on--> Subscription
+
+** Open Mail and Confirm Notification
+

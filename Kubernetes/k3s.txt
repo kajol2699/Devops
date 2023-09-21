@@ -1,0 +1,48 @@
+                           k3s
+
+1) curl -sfL https://get.k3s.io | sh -
+
+
+
+2)  k3s kubectl get node
+
+
+ sudo k3s kubectl run arun123 --image=arunvel1988/arun --port=8000
+
+sudo k3s kubectl get pods
+
+sudo k3s kubectl describe pod pod-name | grep IP
+
+sudo k3s kubectl get services
+
+
+sudo k3s kubectl expose pod pod-name --port=8000 
+
+3) sudo k3s kubectl create deployment arun --image=arunvel1988/cdac
+
+
+sudo k3s kubectl scale --replicas=10 deployment arun
+
+4) sudo k3s kubectl get deployments
+
+5) sudo k3s kubectl expose deployment arun --type=NodePort --port=8000
+
+6) sudo k3s kubectl get services 
+
+7) K3S_TOKEN is created at /var/lib/rancher/k3s/server/node-token
+
+
+8) curl -sfL https://get.k3s.io | K3S_URL=https://10.0.0.1:6443 K3S_TOKEN=XXX sh -
+
+
+9) sudo k3s kubectl get deployment 
+
+10) sudo k3s kubectl scale --replicas=10 deployment arun
+
+
+11)  kubectl run arun --image=arunvel1988/arun_iot --overrides='{"spec": {"template": {"spec": {"containers": [{"name": "arun", "image": "arunvel1988/arun_iot", "securityContext": {"privileged": true} }]}}}}'
+
+
+
+12) sudo k3s kubectl delete deployment arun
+	

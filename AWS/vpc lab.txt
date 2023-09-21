@@ -1,0 +1,63 @@
+19/11/2022(cloud lab):--
+~~~~~~~~~~~~~~~~~~~~~~
+
+01:VPC:- virtual private cloud.
+
+Note:if we create a new server by default one vpc get generated.
+
+*:Host only- We can not contact out side the host machine through the virtual machine.
+
+*:Bridge: Base machine network ip range to virtual machine network they are connected each other.
+
+*:NAT: He convert private ip to public ip, they can connect outside the world(internet).
+
+02:Default vpc and generated vpc can contact(ping) each other if there ip range is same.
+
+03:Create VPC--> *vpc only- can not create subnets (or avaibility Zones)
+		 *vpc and more - can automatic created a few subnets in different avaibility zones.
+		  *Then Give name tag- ex.- vpc-lab01
+		  *Give ipv4 -192.168.0.0/16
+	 	  *Then left the things default and Create vpc.
+04:Create Subnets--> *Select VPC id- vpc-lab01
+		     *Give subnet name- subnet-lab01
+		     *Avaibility Zone- Asia Pacific (Mumbai)/ap-south-1a
+		     *IPv4 CIDR block-192.168.0.0/24
+		     * then create.
+05:Route tables-->* select vpc-lab01.
+	@Routes--edit routes 
+		   *Desstination--0.0.0.0/0
+		   *target-change to vpc-lab01
+	@Edit subnet associations-
+	            *Select the subnet--->subnet-lab01
+06:Internet Gateways-->*create iinternet gateway- internet-gateway-lab01
+			*Attached vpc-lab01
+			*Enable IPv4 public ip.
+
+07:Create new EC2 instace-->*name AWS-lab01
+			     *Network Settings-Select- vpc-lab01
+			     *Left the ssh-- Create new as http and select custom to anywhare.
+			     *launch iinstance.
+
+NOTE: To "delete" the vpc Subneting thing you have to go through vpc-subnets-route table-internetgateway
+~~~~~  	then terminate the EC2 server.
+
+
+Q1: create a vpc of network 10.10.0.0/16 then create subnet1 of 10.10.1.0/24 then create another subnet2 10.10.2.0/24 
+then attach vpc to EC2 instance and show the IP.
+                     ##1 vpc--1 int-gate- 1EC2(subnet1)
+ 					  2EC2(subnet2)##
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

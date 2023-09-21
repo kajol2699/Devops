@@ -1,0 +1,63 @@
+minikube
+
+
+1) sudo apt-get update &&  sudo apt-get install -y apt-transport-https
+
+
+2) sudo apt-get install -y virtualbox virtualbox-ext-pack
+
+
+3) curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+4) sudo touch /etc/apt/sources.list.d/kubernetes.list 
+
+5) echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+
+6)  sudo apt-get update && sudo apt-get install -y kubectl
+
+7) curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.28.2/minikube-linux-amd64
+
+
+8) chmod +x minikube && sudo mv minikube /usr/local/bin/
+
+9) minikube start
+
+minikube ssh
+
+
+minikube dashboard
+
+kubectl create deployment arun --image=arunvel1988/cdac
+
+
+kubectl get deployments
+
+
+kubectl get pods
+
+kubectl expose deployment arun --type=NodePort --port=8000
+
+
+kubectl get services
+
+
+minikube service arun
+
+minikube addons list
+
+
+minikube addons enable heapster
+
+
+kubectl get pod,svc -n kube-system
+
+
+minikube addons open heapster
+
+minikube stop
+
+
+minikube delete
+
+
+

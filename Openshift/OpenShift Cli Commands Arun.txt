@@ -1,0 +1,57 @@
+Openshift Commands
+
+
+1) oc login
+
+2) oc new-project arun-project --display-name 'My Project'
+
+3) oc projects
+
+4) oc project
+
+5) oc project arun-project
+
+6) oc get templates --namespace openshift
+
+
+7) oc new-app arunvel1988/cdac --name arun
+
+8) oc expose service/arun
+
+9) oc status
+
+10) oc get pods
+
+
+11) oc get all -o name --selector app=arun
+
+
+12) oc scale --replicas=3 dc/arun
+
+13) oc arunvel1988/cdac --name arun \
+--env BLOG_BANNER_COLOR=green
+
+
+14) oc set env dc/arun BLOG_BANNER_COLOR=green (Setting environment variables)
+
+
+15) oc set env dc/arun --list 
+
+16) oc delete all --selector app=arun
+
+
+17) oc get is (to see list of image stream definitions)
+
+18) oc import-image arunvel1988/cdac --confirm  (to import the image onto openshift)
+
+19) oc new-app cdac --name pep1
+
+20) oc logs -f bc/pep1 (bc = build config)
+
+
+
+21) oc get bc
+
+22) oc start-build bc/arun12
+
+

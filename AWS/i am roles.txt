@@ -1,0 +1,44 @@
+25/11/22
+~~~~~~~~
+
+IAM Roles:(interaction b/w two services)
+~~~~~~~~~
+*we apply policy to the services.
+(S3<-->lambda intermediate we create roles within give them a policy.)
+
+NOTE:AWS Lambda is a serverless compute service that runs your code in response to events 
+and automatically manages the underlying compute resources for you. 
+These events may include changes in state or an update, such as a user placing an item in a 
+shopping cart on an ecommerce website.
+
+*Roles: services-->lambda-->execution(AWSLambdaBasicExecutionRole)--> next-->role details--> create.
+
+*S3 bucket:---------
+
+*Lambda function-->create fun-->change role
+
+*add triger--> selecte source(S3)-->bucket select.
+
+then, upload a file in bucket
+
+*monitor-->view in logs cloud watch.
+
+*Ntification:
+*add destionation(service--.SNS)
+Then
+SNS(simple notification service)--> name--> standerd create topic
+subscription-->create sub-->protocol-->Email
+then go to lambda
+add dest-->add SNS(Asyncr,On success,Dest type)
+
+Note:In linux read [Cronjob].
+
+
+Q1:Create a two s3 buckect as "prn-lab" and "name_lab".then create two lambda functions and attach roles
+to function for s3 bucket.Then add triggers for ".pdf" on "prn-lab" bucket and ".jpg" on "name_lab" s3 bucket.
+Create a SNS service and attach to destination of both functions and show the logs for "prn_lab" bucket and
+"name-lab" bucket.
+
+Q2:Create one IAM user , create full eccess policy for S3,lmbda ,SNS and read/write policy for IAM then create
+two buckets then create one lambda function and attach role for S3 bucket then triggers for .txt file on fisrt bucket
+and .png file on second bucket create SNS service and show logs for both buckets.

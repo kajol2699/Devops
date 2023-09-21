@@ -1,0 +1,358 @@
+# Containers : lighweight execution units 
+physical server -> VirtualMachines -> Containers
+
+issue with VMs: it requires an Operating system, when a VM starts,first the os start and then the application starts,
+so it takes some time to respond to client therefore, there is a delay in VMs
+VMs are not detachable
+container images are only Read-only
+
+this can be overcome by using containers: 
+containers do not require the complete os, when a container starts, no os Booting required. this container execution is fast as compared to VMs.
+
+to run containers:
+1. we need container runtime
+2. containers runtime is a software which allows you to create,start, stop,i.e. manage containers
+
+ex. docker,rkt,podman,containered
+-> container provides isolation
+
+how container is created:
+-> need an image
+-> contains os based libraries
+-> functions + platofrm(middleware) + application
+
+how to create a container
+# to create a container we use, docker environment
+to download docker, we go to the docker repository 
+-> hub.docker.com
+
+how to install docker
+-> sudo apt install docker.io -y
+
+how to check docker installed or not
+-> docker
+
+how to start docker service
+-> sudo systemctl start docker
+
+how to enable docker on autostart, so that next time when system start,docker service get's started automatically
+-> sudo systemctl enable docker
+
+how to check running container on the given machine
+-> sudo docker ps
+how to check all the containers in running or stopped state
+-> sudo docker ps -a
+
+container LifeCycle
+-> create -> start -> execute(running mode) -> stop/pause
+
+how to check local docker images on the system
+-> sudo docker images
+
+how to pull remote image on the local system
+-> docker pull {image_name}
+ex. docker pull centos
+
+how to run a docker image
+-> docker run {image_name}
+ex. docker run centos
+
+how to delete a container
+-> docker rm {container_name/container_id}
+ex. docker rm centos
+
+how to run a container terminal in interactive mode
+-> docker run -it {container_name/container_id}
+
+how to give custom name to a container
+-> docker run -ti --name {new_name} {container_name/container_id}
+ex. docker run -ti --name c1 centos
+
+how to stop a container which is in running state
+-> docker stop {container_name/container_id}
+
+difference between docker run or start
+docker start : only used to start a stopped container
+docker run : used to create new instance of the base image
+
+how to bring docker running in backgroup to foreground
+-> docker attach {container_id/container_name}
+
+note: when no tag is mentioned while pulling an image, it automatically picks up the image latest image
+-> docker pull {image_name}:tag
+
+when docker is installed on the system, then it creates a virtual adapter by the name of docker0, and we can check that by using command
+-> ip a
+
+how to get detailed view of a docker image
+-> docker inspect {container_name/container_id}
+
+when container is stopped, then it's all resources get's released,except storage
+default ip for docker is 172.17.0.1
+
+how to run apache2 server using container
+-> docker run --name web1 httpd
+
+how to run apache2 server using custom port
+-> docker run --name web1 -p 8000:80 httpd
+    machine-ip:8000
+    container-ip:80
+
+2 may,2023
+-----------------------------------------------
+
+location where websites are hosted in httpd container
+-> /usr/local/apache2/htdocs/
+
+how to host a website inside httpd container
+step 1: first create a container of httpd
+step 2: create html file 
+step 3: run the container with specific parameters
+step 4: paste the custom file in in the container
+
+ex. 
+# create the webpage
+->  sudo vim index.html
+# run the docker container
+->  sudo docker run --name web1 -p 9100:80 -d httpd:tag(default: latest)
+# see if container is running or not
+->  sudo docker ps 
+# check if webpage is running or not
+->  browser -> visit the ip address : localhost:9100
+# copy the file in the container page
+->  sudo docker cp index.html web1:/usr/local/apache2/htdocs/
+
+
+# issue with this approach is that everytime website content is change we need to copy to the container, which is not a practical approach
+# to overcome this we mount our developer directory to the container, this process is known as volume mapping
+
+how to do volume mapping
+# create the directory for the website
+-> sudo mkdir webdata && cd webdata
+-> sudo vi index.html
+-> cd .. 
+-> sudo docker run --name web2 -p 8100:80 -v /webdata/:/usr/local/apache2/htdocs/ -d httpd
+    # description of the command
+    --name : gives name to the docker container
+    -p : assign the ports on local machine: inside container
+    -v : maps the volume present on local machine to the location present inside the container
+
+what if same dir is mapped to another container instance with different port,this will run new container with different port,
+this approach is used to do load balancing
+-> sudo docker run --name web3 -p 8101:80 -v /webdata/:/usr/local/apache2/htdocs/ -d httpd
+
+# running container on web_instance in AWS RedHat
+instance commands
+->  yum install podman
+->  sudo podman images
+->  sudo systemctl status podman  
+->  sudo systemctl start podman
+->  clear
+->  sudo podman ps
+->  sudo mkdir /weddata  
+->  cd /webdata
+->  sudo vi index.html
+    welcome to the podman based website
+->  sudo podman run --name w1 -p 80:80 -v /webdata/:/usr/local/apache2/htdocs/ -d httpd
+->  select the registry image where to pull the httpd image
+    [ ]registry.access.redhat.com/httpd:latest
+    [ ]registry.redhat.io/httpd:latest
+    [*]registry.io/httpd:latest
+->  sudo podman ps
+# if container gets stopped without any reason, to find the reason we need to check the container logs
+# to check container logs
+->  sudo podman logs w1 -> (no logs found)
+->  sudo podman images -> (image was download successfully)
+# to check redhat logs
+->  sudo tail -20 /var/log/messages/
+-> sudo getenforce -> Security Enhanced Linux (it doesn't allow to run containers) -> enforcing mode
+-> sudo setenforce 0 -> Permissive mode
+-> sudo podman rm w1
+# now try running the linux after putting SElinux in Permissive mode
+-> sudo podman run --name w1 -p 80:80 -v /webdata/:/usr/local/apache2/htdocs/ -d httpd -> container running successfully after disabling Security Enhanced Linux
+
+# running docker container for mysql on ubuntu based instance 
+-> apt install docker.io
+-> sudo systemctl start docker
+-> sudo docker run --name db1 -ti -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql 
+    # description of the command
+    -e : set the password for default root account 
+
+
+# how to create docker image from ubuntu image file
+# there is direct root access inside, the container
+# docker file name should be Dockerfile
+# dont delete the file as it will create each and every layer 
+# two images can't have the same name
+# use "double" quotes whenever we pass arguments inside CMD command in Dockerfile, also the space to separate the arguments
+
+
+to delete a docker image we use
+-> sudo docker rmi [image_name/image_id]
+
+to delete a container we use
+-> sudo docker rm [container_id/container_name]
+
+-> code
+    FROM ubuntu
+    RUN apt update -y
+    RUN apt install python2.7 -y
+    RUN mkdir /App1
+    COPY hello.py /App1/
+    CMD [ "python2.7" , "/App1/hello.py" ]
+
+# tell docker to build image
+# -t : it gives name:tag
+-> docker build -t [image_name] [path]
+ex docker build -t myapp:v1 ./
+
+docker creates the image in layer format
+
+------------------------
+|   run file           |   :   layer 6
+------------------------
+|   copy file          |   :   layer 5
+------------------------
+|   mkdir /App1        |   :   layer 4
+------------------------
+|   install python 2.7 |   :   layer 3
+------------------------
+|   update os          |   :   layer 2
+------------------------
+|   os image           |   :   layer 1
+------------------------
+
+# creating another image in docker for python
+
+-> code
+    FROM ubuntu
+    RUN apt update -y
+    RUN apt install python2.7 -y
+    RUN mkdir /app2
+    COPY prog1.py /app2/
+    CMD [ "python2.7" , "/App1/prog1.py" ]
+
+-> docker build -t myapp2 .
+
+# creating another image in docker to run bash script
+
+-> code
+    FROM ubuntu
+    RUN apt update -y
+    RUN mkdir /script
+    COPY script.sh ./script
+    CMD [ "./script/script.sh" ]
+
+-> docker build -t script1 .
+
+how to save container as image file
+# it doesn't execute anything, it just saves the state of the container
+# sudo docker run --name ub1 -ti ubuntu
+    -> mkdir /test
+    -> cd /test
+    -> vi s1.sh
+    -> cat > s1.sh
+    -> ls
+    -> chmod +x s1.sh
+    -> ./s1.sh
+
+# to save a container as a image, it has to be in stopped state
+-> sudo docker commit [container_name] [image_name]
+
+# now we can recover that file in by running the backup file, just in case if that container gets deleted
+
+
+# how to save a container into a tar file format and send it to someone else
+
+# method 1: using tar file format
+-> container -> .tar file
+
+# this command will make the tar file in the current directory where this command has been executed
+-> sudo docker save myapp1 > myapp1.tar
+
+# how to recover container from tar file to docker container
+-> sudo docker load < myapp1.tar  
+
+# method 2: upload this container to docker hub, and pull it from remote repository
+-> create account on docker hub 
+-> create repository
+-> give name to repository -> give description -> choose public, or private -> 
+-> sudo docker login 
+    -> username: [username]
+    -> password: [password]
+-> sudo docker tag myapp1 [username/repository_name]
+-> sudo docker push [username/repository_name]
+
+
+----------------------------------
+3 may 2023
+----------------------------------
+# Container networking
+# what is the default ip and networking mode for a container
+# default IP : 172.17.0.1
+# default mode : Bridged (acts as a NAT mode, only single side connection is allowed, but this mode allow port mapping)
+# default adapter : docker 0 : bridge mode
+
+how to create new docker network?
+-> sudo docker network create [network_name]
+-> ex. sudo docker network create app1
+
+how to find help regarding docker network commands
+-> sudo docker network -h
+
+# in order to run our application we pack it inside a custom image,which will be used to run container based on this image
+
+# python script to connect with database
+    import mysql.connector
+    mydb = mysql.connector.connect(
+       host="hpcsa-db"
+       user="root"
+       passwd="password"
+       auth_plugin="mysql_native_password"
+      )
+    testcursor = mydb.cursor()
+    test.cursor.execute("Create database studentdb")
+    test.cursor.execute("SHOW DATABASES")
+    for x in testcursor:
+    print(x)
+-> save it as test.py
+
+# creating the Dockerfile
+    FROM python 3.9
+    RUN pip install mysql-connector-python
+    CMD [ "python" , "test.py" ]
+
+-> sudo docker build -t py-sql .
+
+# we do not require port mapping, as networking is being done inside containers only
+-> sudo docker run --name hpcsa-db -e MYSQL_ROOT_PASSWORD=password -d mysql
+
+-> sudo docker run --rm py-sql
+
+# we need to stop previous running container
+-> sudo docker stop hpcsa-db
+
+# restarting the containers with custom network
+-> sudo docker run --name hpcsa-db --network hpcsa -e MYSQL_ROOT_PASSWORD=password -d mysql
+
+# now running the py-sql container
+-> sudo docker run --network hpcsa --rm py-sql
+
+# conclusion
+-> create separate directory
+-> copy test.py in that directory 
+-> edit test.py and specify hostname,username,password
+-> create Dockerfile
+-> build image from docker file 
+-> create docker network for mysql and py-sql
+-> start mysql container with custom network 
+-> start application container within the same network 
+
+# issues with single container 
+# not scalable
+# single point failurs
+
+# to resolve this we use container clusters
+# we have 2 options to form clusters, both are opensource
+1. docker swarm : only support the docker runtime
+2. kubernets(k8s) : can be used with other container runtime

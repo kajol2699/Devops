@@ -1,0 +1,43 @@
+Install Docker on Windows Server 2019
+1.Install-WindowsFeature Containers 
+2.Restart-Computer -Force
+3.Install-Module -Name DockerMsftProvider -Repository PSGallery -Force
+4.Install-Package -Name docker -ProviderName DockerMsftProvider
+5.Restart-Computer -Force
+6.Start-Service docker
+
+Use Windows Server 2019 docker image
+7.docker pull mcr.microsoft.com/windows/servercore:ltsc2019
+6. docker pull mcr.microsoft.com/windows/nanoserver:1809
+
+Use Windows Server 2016 docker image
+7. docker pull mcr.microsoft.com/windows/servercore:1607
+8. docker pull mcr.microsoft.com/windows/nanoserver:1803
+
+Enable Remote management for container 
+IIS service. Create Docker file in a directory and type following.
+FROM microsoft/iis
+
+SHELL [ "powershell" ]
+
+#setup Remote IIS management
+
+RUN Install-WindowsFeature Web-Mgmt-Service; \
+
+New-ItemProperty -Path HKLM:\software\microsoft\WebManagement\Server -Name EnableRemoteManagement -Value 1 -Force; \
+
+Set-Service -Name wmsvc -StartupType automatic;
+
+#Add user for Remote IIS Manager Login
+
+RUN net user iisadmin Password~1234 /ADD; \
+
+net localgroup administrators iisadmin /add; 
+
+Save the file and build image using docker build.
+
+Using Microsoft SQL Server docker image 
+
+1.docker pull microsoft/mssql-server-windows-express
+
+2. docker run -d --name sql1 -e sa_password=password -e ACCEPT_EULA=y -p 1433:1433 microsoft/mssql-server-windows-express

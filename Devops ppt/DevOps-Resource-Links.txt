@@ -1,0 +1,22 @@
+Docker - 
+1.https://takacsmark.com/
+2.takacsmark youtube channel
+3.https://www.linode.com/docs/applications/containers/docker-commands-quick-reference-cheat-sheet/
+4.https://www.docker.com/sites/default/files/d8/2019-09/docker-cheat-sheet.pdf
+5.https://docs.docker.com/
+
+Kubernetes
+1.https://www.tutorialspoint.com/kubernetes/kubernetes_kubectl_commands.htm
+2. https://kubernetes.io/docs/home/
+3.Book - Cloud Native DevOps with Kubernetes: Building, Deploying, and Scaling Modern Applications in the Cloud
+4. Book - Docker and Kubernetes for Java Developers
+
+Git
+1. https://dzone.com/articles/top-20-git-commands-with-examples
+2. https://git-scm.com/docs/git
+3. https://confluence.atlassian.com/bitbucketserver/basic-git-commands-776639767.html
+
+Jenkins
+1.https://jenkins.io/doc/
+2.https://jenkins.io/doc/book/
+3.https://automationstepbystep.com/jenkins/
